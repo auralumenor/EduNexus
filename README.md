@@ -41,7 +41,7 @@ Before running this project, you must install:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/digital-curator.git
+   git clone https://github.com/auralumenor/EduNexus.git
    cd digital-curator
    ```
 
