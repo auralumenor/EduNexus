@@ -1,0 +1,42 @@
+# node_modules and build output
+node_modules/
+dist/
+build/
+.vite/
+
+# Environment files — never commit secrets
+**/.env
+**/.env.local
+**/.env.production
+**/.env.development
+**/.env.test
+
+# Logs
+**/logs
+*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# OS artifacts
+**/.DS_Store
+**/Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.suo
+*.sln
+*.swp
+*.bak
+
+# TypeScript
+*.tsbuildinfo
+
+# Docker volumes
+mongo_data/
+
+# Uploads directory
+server/uploads/*
+!server/uploads/.gitkeep

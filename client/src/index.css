@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background-light text-text-primary-light transition-colors duration-200 antialiased font-sans;
+  }
+  
+  .dark body {
+    @apply bg-background-dark text-text-primary-dark;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-card-light/80 border border-border-light backdrop-blur-md shadow-sm;
+  }
+  .dark .glass-card {
+    @apply bg-card-dark/60 border-border-dark shadow-glass;
+  }
+
+  .input-field {
+    @apply w-full bg-white border border-border-light rounded text-text-primary-light px-3 py-2 text-sm transition-colors duration-200 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder-text-secondary-light dark:bg-background-dark dark:border-border-dark dark:text-text-primary-dark dark:focus:ring-primary/10 dark:placeholder-text-secondary-dark;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-primary text-white font-medium text-sm px-4 py-2 rounded transition-all duration-200 hover:bg-primary-hover active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 bg-transparent text-text-secondary-light border border-border-light font-medium text-sm px-4 py-2 rounded transition-all duration-200 hover:bg-black/5 hover:text-text-primary-light active:scale-[0.98] dark:text-text-secondary-dark dark:border-border-dark dark:hover:bg-white/5 dark:hover:text-text-primary-dark;
+  }
+
+  /* Fade in animation for smoother page transitions */
+  .animate-fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Webkit Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border-light rounded-full;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-border-dark;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400 dark:bg-slate-600;
+}

@@ -1,0 +1,16 @@
+{
+  "name": "edunexus",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently -n CLIENT,SERVER -c cyan,green \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+    "dev": "concurrently -n CLIENT,SERVER -c cyan,green \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+    "dev:client": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "build:client": "npm run build --prefix client",
+    "build:server": "npm run build --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
