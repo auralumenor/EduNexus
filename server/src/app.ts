@@ -15,7 +15,14 @@ const app: Application = express();
 
 // Core middleware
 const allowedOrigins = ENV.NODE_ENV === 'production' 
-  ? '*' // Or specific Vercel domains
+  ? (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      // Allow if no origin (like mobile apps/curl) or if it matches a Vercel subdomain
+      if (!origin || origin.endsWith('.vercel.app') || SERVER_CONFIG.ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
   : SERVER_CONFIG.ALLOWED_ORIGINS;
 
 app.use(cors({ origin: allowedOrigins, credentials: true }));

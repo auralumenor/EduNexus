@@ -11,6 +11,8 @@ export default async (req: any, res: any) => {
     // Ensure database connection is active (connectDB handles multiple calls safely)
     await connectDB();
     
+    console.log(`🚀 Bridge triggered: ${req.method} ${req.url}`);
+    
     // Pass the request to the Express application
     return app(req, res);
   } catch (error: any) {
