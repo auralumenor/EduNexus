@@ -3,6 +3,7 @@ import cors from 'cors';
 import { logger } from './middleware/logger.middleware';
 import { errorHandler, notFound } from './middleware/error.middleware';
 import { SERVER_CONFIG } from './config/server';
+import { ENV } from './config/env';
 
 // Route imports
 import authRoutes        from './modules/auth/auth.routes';
@@ -13,7 +14,11 @@ import transactionRoutes from './modules/transaction/transaction.routes';
 const app: Application = express();
 
 // Core middleware
-app.use(cors({ origin: SERVER_CONFIG.ALLOWED_ORIGINS, credentials: true }));
+const allowedOrigins = ENV.NODE_ENV === 'production' 
+  ? '*' // Or specific Vercel domains
+  : SERVER_CONFIG.ALLOWED_ORIGINS;
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger);

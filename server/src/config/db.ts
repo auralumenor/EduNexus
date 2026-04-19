@@ -38,16 +38,25 @@ const getConnectionUri = async (): Promise<string> => {
 };
 
 export const connectDB = async (): Promise<void> => {
+  // If already connected, do not attempt to reconnect (crucial for serverless)
+  if (mongoose.connection.readyState === 1) {
+    return;
+  }
+
   try {
     const uri = await getConnectionUri();
     if (uri) {
-      // uri is empty string when already connected above
-      await mongoose.connect(uri);
+      await mongoose.connect(uri, {
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      });
       console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
     }
   } catch (error: any) {
     console.error('❌ MongoDB connection failed:', error.message);
-    process.exit(1);
+    // In serverless, we don't necessarily want to process.exit(1) 
+    // as it might kill the function container unnecessarily.
+    throw error;
   }
 };
 
