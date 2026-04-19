@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import * as userController from './user.controller';
-import { protect } from '../../middleware/auth.middleware';
+import { protect, restrictTo } from '../../middleware/auth.middleware';
 
 const router = Router();
 
 router.use(protect);
+router.use(restrictTo('admin'));
 
 router.route('/')
   .get(userController.getMembers)

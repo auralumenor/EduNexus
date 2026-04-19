@@ -14,20 +14,26 @@
 
 ## Overview
 
-EduNexus is a modern, responsive, and secure open-source Library Management System designed for administrative workflows. It streamlines database operations by allowing instant catalogue modifications, user transaction histories, and dynamically hooks directly into [OpenLibrary.org](https://openlibrary.org/) to autofill physical inventory data natively via ISBN fetching.
+EduNexus is a modern, responsive, and secure open-source Library Management System designed for administrative workflows. It streamlines database operations by allowing instant catalogue modifications, user transaction histories, and dynamically hooks directly into [OpenLibrary.org](https://openlibrary.org/) to discover and preview volumes before adding them to your inventory.
 
 ## Features
 
-- **Dynamic Book Discovery**: Search by **Title, Author, or ISBN**. Our system dynamically hooks into [OpenLibrary.org](https://openlibrary.org/) to fetch high-quality covers, publishers, and metadata to auto-fill your inventory.
-- **Enterprise Design Language**: Premium "GlassCard" aesthetic powered by custom-themed Tailwind CSS.
-- **Dedicated User Profile**: Decoupled profile management featuring secure credential updates and a controlled account deletion "Danger Zone".
-- **Interactive Tooltips**: Intelligent micro-interactions with a 4-second hover delay for contextual guidance without UI clutter.
-- **System Synchronization**: Native `Light | Dark | System` theme management that syncs automatically with your OS environment.
-- **Custom UI Components**: Hand-crafted accessible dropdowns, modals, and tailored slim-scrollbars for a cohesive experience.
+- **Dynamic Catalog Discovery**: Search by **Title, Author, or ISBN**. Our system hooks into [OpenLibrary.org](https://openlibrary.org/) to fetch high-resolution covers and metadata, allowing you to cycle through subjects and discover fresh titles.
+- **Role-Based Access Control (RBAC)**: Secure infrastructure with dedicated **Admin** and **Librarian** permissions.
+- **Enterprise Design Language**: Premium "GlassCard" aesthetic powered by custom-themed Tailwind CSS and the Stitch design system.
+- **Real-Time Dashboards**: Interactive metrics tracking circulation flux and volume spotlighting.
+- **Integrated Route Guards**: Hardware acceleration for route transitions and role-based navigation shielding.
 - **Secure Architecture**: 
   - JWT-based authentication
-  - Password hashing via `bcrypt`
-  - Integrated `nodemailer` support for SMTP-based account recovery.
+  - Role-specific API hardening (`restrictTo('admin')`)
+  - Integration with Cloud MongoDB Atlas.
+
+## Security Roles
+
+| Role | Access Level | Description |
+| :--- | :--- | :--- |
+| **Admin** | Full Control | Can manage members, delete volumes, edit metadata, and access system settings. |
+| **Librarian** | Operational | Can browse the catalog, manage transactions, and discover new books. Restricted from deletion. |
 
 ## Prerequisites
 
@@ -35,37 +41,36 @@ Before running this project, you must install:
 - **Node.js** (v18 or higher)
 - **MongoDB** (Local instance or Atlas Cluster)
 
-*(Note: In development environments, the system features a robust fallback script that will automatically spin up an in-memory `mongodb-memory-server` if you do not have a Docker/local daemon running!)*
-
 ## Quick Start
 
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/auralumenor/EduNexus.git
-   cd digital-curator
+   cd Library_Management_System
    ```
 
 2. **Install Dependencies:**
    ```bash
-   npm install --prefix client
-   npm install --prefix server
    npm install
    ```
 
 3. **Environment Setup:**
-   Duplicate the `.env.example` configurations.
+   Duplicate the `.env.example` configurations in both `server/` and `client/` directories.
    ```bash
+   # Root level
+   cp .env.example .env
+   # Subdirectories
    cp server/.env.example server/.env
    cp client/.env.example client/.env
    ```
-   *(Be sure to adjust `server/.env` with your desired MongoDB routing and arbitrary secret key)*
+   *(Be sure to adjust `server/.env` with your MongoDB URI and JWT_SECRET)*
 
 4. **Launch Application:**
-   From the root folder, utilize the concurrent environment runner to rapidly spawn both the Vite bundler and local Node server:
+   From the root folder, launch the unified development environment:
    ```bash
-   npm start
+   npm run dev
    ```
-   The client will open automatically at `http://localhost:3000` mapped to intercept your API traffic over `http://localhost:5000`.
+   The client will open automatically at `http://localhost:3000` while the backend runs on `http://localhost:5000`.
 
 ## Directory Structure
 

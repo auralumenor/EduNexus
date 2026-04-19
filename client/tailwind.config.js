@@ -4,54 +4,86 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class', // Enable class-based dark mode
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        background: {
-          light: '#f8fafc', // slate-50
-          dark: '#0b0f19',
-        },
-        card: {
-          light: '#ffffff',
-          dark: '#131722',
-        },
-        primary: {
-          DEFAULT: '#3b82f6', // blue-500
-          hover: '#2563eb', // blue-600
-          glow: 'rgba(59, 130, 246, 0.5)'
-        },
-        text: {
-          primary: {
-            light: '#0f172a', // slate-900
-            dark: '#e2e8f0', // slate-200
-          },
-          secondary: {
-            light: '#64748b', // slate-500
-            dark: '#94a3b8', // slate-400
-          }
-        },
-        border: {
-          light: '#e2e8f0', // slate-200
-          dark: 'rgba(255, 255, 255, 0.08)',
-        }
+        "background": "rgb(var(--color-background) / <alpha-value>)",
+        "surface": "rgb(var(--color-surface) / <alpha-value>)",
+        "surface-bright": "rgb(var(--color-surface-bright) / <alpha-value>)",
+        "surface-dim": "rgb(var(--color-surface-dim) / <alpha-value>)",
+        "surface-container-lowest": "rgb(var(--color-surface-container-lowest) / <alpha-value>)",
+        "surface-container-low": "rgb(var(--color-surface-container-low) / <alpha-value>)",
+        "surface-container": "rgb(var(--color-surface-container) / <alpha-value>)",
+        "surface-container-high": "rgb(var(--color-surface-container-high) / <alpha-value>)",
+        "surface-container-highest": "rgb(var(--color-surface-container-highest) / <alpha-value>)",
+        "surface-variant": "rgb(var(--color-surface-variant) / <alpha-value>)",
+        "primary": "rgb(var(--color-primary) / <alpha-value>)",
+        "on-primary": "rgb(var(--color-on-primary) / <alpha-value>)",
+        "primary-container": "rgb(var(--color-primary-container) / <alpha-value>)",
+        "on-primary-container": "rgb(var(--color-on-primary-container) / <alpha-value>)",
+        "primary-fixed": "rgb(var(--color-primary-fixed) / <alpha-value>)",
+        "primary-fixed-dim": "rgb(var(--color-primary-fixed-dim) / <alpha-value>)",
+        "on-primary-fixed": "rgb(var(--color-on-primary-fixed) / <alpha-value>)",
+        "on-primary-fixed-variant": "rgb(var(--color-on-primary-fixed-variant) / <alpha-value>)",
+        "primary-dim": "rgb(var(--color-primary-dim) / <alpha-value>)",
+        "secondary": "rgb(var(--color-secondary) / <alpha-value>)",
+        "on-secondary": "rgb(var(--color-on-secondary) / <alpha-value>)",
+        "secondary-container": "rgb(var(--color-secondary-container) / <alpha-value>)",
+        "on-secondary-container": "rgb(var(--color-on-secondary-container) / <alpha-value>)",
+        "secondary-fixed": "rgb(var(--color-secondary-fixed) / <alpha-value>)",
+        "secondary-fixed-dim": "rgb(var(--color-secondary-fixed-dim) / <alpha-value>)",
+        "on-secondary-fixed": "rgb(var(--color-on-secondary-fixed) / <alpha-value>)",
+        "on-secondary-fixed-variant": "rgb(var(--color-on-secondary-fixed-variant) / <alpha-value>)",
+        "secondary-dim": "rgb(var(--color-secondary-dim) / <alpha-value>)",
+        "tertiary": "rgb(var(--color-tertiary) / <alpha-value>)",
+        "on-tertiary": "rgb(var(--color-on-tertiary) / <alpha-value>)",
+        "tertiary-container": "rgb(var(--color-tertiary-container) / <alpha-value>)",
+        "on-tertiary-container": "rgb(var(--color-on-tertiary-container) / <alpha-value>)",
+        "tertiary-fixed": "rgb(var(--color-tertiary-fixed) / <alpha-value>)",
+        "tertiary-fixed-dim": "rgb(var(--color-tertiary-fixed-dim) / <alpha-value>)",
+        "on-tertiary-fixed": "rgb(var(--color-on-tertiary-fixed) / <alpha-value>)",
+        "on-tertiary-fixed-variant": "rgb(var(--color-on-tertiary-fixed-variant) / <alpha-value>)",
+        "tertiary-dim": "rgb(var(--color-tertiary-dim) / <alpha-value>)",
+        "error": "rgb(var(--color-error) / <alpha-value>)",
+        "on-error": "rgb(var(--color-on-error) / <alpha-value>)",
+        "error-container": "rgb(var(--color-error-container) / <alpha-value>)",
+        "on-error-container": "rgb(var(--color-on-error-container) / <alpha-value>)",
+        "error-dim": "rgb(var(--color-error-dim) / <alpha-value>)",
+        "on-background": "rgb(var(--color-on-background) / <alpha-value>)",
+        "on-surface": "rgb(var(--color-on-surface) / <alpha-value>)",
+        "on-surface-variant": "rgb(var(--color-on-surface-variant) / <alpha-value>)",
+        "outline": "rgb(var(--color-outline) / <alpha-value>)",
+        "outline-variant": "rgb(var(--color-outline-variant) / <alpha-value>)",
+        "inverse-surface": "rgb(var(--color-inverse-surface) / <alpha-value>)",
+        "inverse-on-surface": "rgb(var(--color-inverse-on-surface) / <alpha-value>)",
+        "inverse-primary": "rgb(var(--color-inverse-primary) / <alpha-value>)",
+        "surface-tint": "rgb(var(--color-surface-tint) / <alpha-value>)",
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        headline: ["Manrope", "sans-serif"],
+        body: ["Inter", "sans-serif"],
+        label: ["Inter", "sans-serif"],
+        sans: ["Inter", "sans-serif"], // Fallback sans
       },
       borderRadius: {
-        'sm': '0.25rem',   // 4px
-        'DEFAULT': '0.5rem', // 8px (The "not too rounded" standard)
-        'md': '0.5rem',    // 8px
-        'lg': '0.75rem',   // 12px
-        'xl': '1rem',      // 16px
+        "none": "0",
+        "sm": "0.125rem",
+        "md": "0.25rem",
+        "DEFAULT": "0.5rem", // Standardized to 8px
+        "lg": "0.5rem",      // Align with DEFAULT for cards
+        "xl": "0.5rem",      // Rounded corners max out closely at 8-12px
+        "2xl": "1rem",       // For massive hero blocks if needed
+        "full": "9999px"
       },
       boxShadow: {
-        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+        "ambient": "0 20px 50px rgba(25, 28, 30, 0.06)",
+        "glass": "0 8px 32px 0 rgba(0, 0, 0, 0.06)", // Modernized glass shadow
       }
     },
   },
   plugins: [
     require('@tailwindcss/forms'),
+    require('@tailwindcss/container-queries')
   ],
 }

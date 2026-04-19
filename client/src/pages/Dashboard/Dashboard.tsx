@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Users, ArrowLeftRight, TrendingUp, AlertCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { getBooks } from '../../services/book.service';
 import { getMembers } from '../../services/user.service';
 import { getTransactions } from '../../services/transaction.service';
@@ -25,120 +25,188 @@ const Dashboard: React.FC = () => {
   const totalBooks       = books.length;
   const availableBooks   = books.reduce((s, b) => s + b.availableCopies, 0);
   const activeMembers    = members.filter(m => m.status === 'active').length;
-  const activeBorrows    = transactions.filter(t => t.status === 'borrowed').length;
   const overdueItems     = transactions.filter(t => t.status === 'overdue').length;
-  const recentTx         = [...transactions].slice(0, 8);
+  const recentTx         = [...transactions].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 8);
 
-  const statCards = [
-    { label: 'Total Books',      value: totalBooks,     icon: BookOpen,       colorClass: 'text-blue-500 bg-blue-500/10 dark:text-blue-400 dark:bg-blue-400/10' },
-    { label: 'Available Copies', value: availableBooks, icon: TrendingUp,     colorClass: 'text-green-500 bg-green-500/10 dark:text-green-400 dark:bg-green-400/10' },
-    { label: 'Active Members',   value: activeMembers,  icon: Users,          colorClass: 'text-purple-500 bg-purple-500/10 dark:text-purple-400 dark:bg-purple-400/10' },
-    { label: 'Books Borrowed',   value: activeBorrows,  icon: ArrowLeftRight, colorClass: 'text-amber-500 bg-amber-500/10 dark:text-amber-400 dark:bg-amber-400/10' },
-    { label: 'Overdue Items',    value: overdueItems,   icon: AlertCircle,    colorClass: 'text-red-500 bg-red-500/10 dark:text-red-400 dark:bg-red-400/10' },
-  ];
+  // Dynamic Circulation Flux Calculation (Last 12 days)
+  const fluxData = [...Array(12)].map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (11 - i));
+    const dateStr = d.toISOString().split('T')[0];
+    // Count transactions that happened on this day
+    return transactions.filter(t => (t.borrowedDate || t.createdAt).startsWith(dateStr)).length;
+  });
+  const maxFlux = Math.max(...fluxData, 1);
+  const availableBooksPercent = totalBooks ? Math.round((availableBooks / totalBooks) * 100) : 0;
+  
+  // Spotlight book (the most recently updated volume)
+  const featuredBook = books.length > 0 ? [...books].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())[0] : null;
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-10 animate-pulse">
+        <div className="h-24 bg-surface-container-low rounded-2xl w-full"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => <div key={i} className="h-40 bg-surface-container-low rounded-2xl"></div>)}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight mb-1 text-text-primary-light dark:text-text-primary-dark">Dashboard Overview</h1>
-        <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark">Welcome back — here's what's happening in your library today.</p>
-      </div>
-
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-24 rounded-xl bg-slate-200 dark:bg-card-dark animate-pulse" />
-          ))}
+    <div className="grid grid-cols-12 gap-6 relative">
+      
+      {/* Hero Metric */}
+      <section className="col-span-12 lg:col-span-8 bg-surface-container-low dark:bg-slate-900/40 rounded-xl p-8 flex flex-col gap-8 relative overflow-hidden border border-transparent custom-shadow-hover transition-all duration-300">
+        <div className="flex justify-between items-start z-10">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.25em] text-outline font-black mb-2">Circulation Flux</p>
+            <h3 className="text-5xl font-black text-[#1A365D] dark:text-white font-headline tracking-tighter">{totalBooks} <span className="text-base font-bold text-tertiary-fixed-dim tracking-normal ml-2">Total Managed</span></h3>
+          </div>
+          <div className="flex gap-2">
+            <span className="px-4 py-1.5 bg-primary/10 dark:bg-primary-fixed/10 border border-primary/20 rounded-full text-[11px] font-bold text-primary dark:text-primary-fixed uppercase tracking-wider">{availableBooksPercent}% Available</span>
+          </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {statCards.map(({ label, value, icon: Icon, colorClass }) => (
-            <div className="glass-card flex items-center gap-4 !p-5 hover:-translate-y-1 transition-transform duration-200" key={label}>
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${colorClass}`}>
-                <Icon size={24} />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold leading-none mb-1 text-text-primary-light dark:text-text-primary-dark">{value}</span>
-                <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark font-medium uppercase tracking-wide">{label}</span>
-              </div>
-            </div>
-          ))}
+        <div className="h-48 w-full mt-auto flex items-end gap-1.5 relative z-10">
+          {fluxData.map((val, i) => {
+             const height = Math.max(10, Math.round((val / maxFlux) * 100));
+             const isLast = i === fluxData.length - 1;
+             return (
+               <div 
+                 key={i} 
+                 className={`flex-1 rounded-t-sm transition-all duration-500 hover:brightness-110 shadow-sm
+                   ${isLast 
+                     ? 'bg-gradient-to-t from-primary/80 to-primary-container shadow-lg brightness-110 h-[92%]' 
+                     : 'bg-primary/20 hover:bg-primary/40'
+                   }`}
+                 style={{ height: isLast ? undefined : `${height}%` }}
+               ></div>
+             );
+          })}
         </div>
-      )}
+        <div className="absolute -right-12 -top-12 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+      </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Quick Action Bento */}
+      <section className="col-span-12 lg:col-span-4 grid grid-cols-2 gap-4">
+        <Link to="/books" className="col-span-2 bg-gradient-to-br from-tertiary via-tertiary-dim to-[#004a74] p-6 rounded-xl text-white flex flex-col justify-between aspect-[16/7] group transition-all duration-300 hover:shadow-xl active:scale-[0.98]">
+          <span className="material-symbols-outlined text-4xl group-hover:scale-110 transition-transform duration-300">add_circle</span>
+          <div className="text-left">
+            <p className="text-xs opacity-70 font-semibold tracking-wide uppercase">New Volume</p>
+            <h4 className="text-2xl font-black font-headline tracking-tight">Ingest Archive</h4>
+          </div>
+        </Link>
+        <Link to="/members" className="bg-surface-container-low dark:bg-slate-900/40 p-6 rounded-xl flex flex-col justify-between aspect-square border border-transparent hover:border-primary/20 custom-shadow-hover transition-all group active:scale-[0.98]">
+          <span className="material-symbols-outlined text-outline group-hover:text-primary transition-colors">group</span>
+          <p className="text-[11px] font-black text-on-surface dark:text-white uppercase tracking-widest">{activeMembers} Active Users</p>
+        </Link>
+        <Link to="/transactions" className="bg-surface-container-low dark:bg-slate-900/40 p-6 rounded-xl flex flex-col justify-between aspect-square border border-transparent hover:border-error/20 custom-shadow-hover transition-all group active:scale-[0.98]">
+          <span className="material-symbols-outlined text-error group-hover:scale-110 transition-transform">report_problem</span>
+          <p className="text-[11px] font-black text-on-surface dark:text-white uppercase tracking-widest">{overdueItems} Alerts</p>
+        </Link>
+      </section>
+
+      {/* Activity List */}
+      <section className="col-span-12 lg:col-span-7 bg-surface-container-low dark:bg-slate-900/40 rounded-xl p-8 border border-transparent custom-shadow-hover transition-all duration-300">
+        <div className="flex justify-between items-center mb-10 border-b border-outline/5 dark:border-white/10 pb-6">
+          <h3 className="text-2xl font-black font-headline text-on-surface dark:text-white">Live Operations</h3>
+          <Link to="/transactions" className="text-[11px] font-black text-primary dark:text-primary-container uppercase tracking-[0.15em] hover:underline decoration-2 underline-offset-4">View Master Log</Link>
+        </div>
         
-        {/* Recent Transactions */}
-        <div className="glass-card flex flex-col">
-          <h2 className="text-lg font-bold mb-4 text-text-primary-light dark:text-text-primary-dark">Recent Transactions</h2>
-          {recentTx.length === 0 && !loading ? (
-            <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark py-4 text-center">No transactions yet.</p>
+        <div className="space-y-6">
+          {recentTx.length === 0 ? (
+            <div className="text-sm text-outline p-4 bg-surface-container rounded text-center">No recent activity.</div>
           ) : (
-            <div className="overflow-x-auto -mx-8 px-8 sm:mx-0 sm:px-0">
-              <table className="w-full text-sm text-left">
-                <thead className="text-xs text-text-secondary-light dark:text-text-secondary-dark uppercase border-b border-border-light dark:border-border-dark">
-                  <tr>
-                    <th className="pb-3 font-semibold">Book</th>
-                    <th className="pb-3 font-semibold">Member</th>
-                    <th className="pb-3 font-semibold">Status</th>
-                    <th className="pb-3 font-semibold text-right">Due Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-light dark:divide-border-dark">
-                  {recentTx.map(tx => (
-                    <tr key={tx._id} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
-                      <td className="py-3 font-medium text-text-primary-light dark:text-text-primary-dark whitespace-nowrap">{tx.book?.title ?? '—'}</td>
-                      <td className="py-3 text-text-secondary-light dark:text-text-secondary-dark whitespace-nowrap">{tx.member?.name ?? '—'}</td>
-                      <td className="py-3">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full capitalize
-                          ${tx.status === 'borrowed' ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' : ''}
-                          ${tx.status === 'returned' ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400' : ''}
-                          ${tx.status === 'overdue' ? 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400' : ''}
-                        `}>
-                          {tx.status}
-                        </span>
-                      </td>
-                      <td className="py-3 text-right text-text-secondary-light dark:text-text-secondary-dark whitespace-nowrap">
-                        {new Date(tx.dueDate).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-        {/* Recent Members */}
-        <div className="glass-card flex flex-col">
-          <h2 className="text-lg font-bold mb-4 text-text-primary-light dark:text-text-primary-dark">Recent Members</h2>
-          {members.slice(0, 6).length === 0 && !loading ? (
-            <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark py-4 text-center">No members yet.</p>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {members.slice(0, 6).map(m => (
-                <div className="flex items-center gap-3 py-2 border-b border-border-light dark:border-border-dark last:border-0" key={m._id}>
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-indigo-500 flex items-center justify-center text-white font-semibold text-sm shrink-0 shadow-sm">
-                    {m.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <span className="text-sm font-medium text-text-primary-light dark:text-text-primary-dark truncate">{m.name}</span>
-                    <span className="text-xs text-text-secondary-light dark:text-text-secondary-dark font-mono truncate">{m.membershipId}</span>
-                  </div>
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full capitalize shrink-0
-                    ${m.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400' : ''}
-                    ${m.status === 'suspended' ? 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400' : ''}
-                    ${m.status === 'expired' ? 'bg-slate-100 text-slate-700 dark:bg-slate-500/10 dark:text-slate-400' : ''}
+            recentTx.slice(0, 4).map(tx => (
+              <div key={tx._id} className="flex items-center gap-6 p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer group">
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center border
+                  ${tx.status === 'borrowed' ? 'bg-tertiary/10 border-tertiary/10' : ''}
+                  ${tx.status === 'returned' ? 'bg-primary/10 border-primary/10 dark:bg-primary-fixed/5' : ''}
+                  ${tx.status === 'overdue' ? 'bg-error/10 border-error/10' : ''}
+                `}>
+                  <span className={`material-symbols-outlined transition-transform group-hover:scale-110
+                    ${tx.status === 'borrowed' ? 'text-tertiary' : ''}
+                    ${tx.status === 'returned' ? 'text-primary dark:text-primary-container' : ''}
+                    ${tx.status === 'overdue' ? 'text-error' : ''}
                   `}>
-                    {m.status}
+                    {tx.status === 'borrowed' ? 'swap_horiz' : tx.status === 'returned' ? 'assignment_turned_in' : 'priority_high'}
                   </span>
                 </div>
-              ))}
-            </div>
+                <div className="flex-1">
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm font-black text-on-surface dark:text-white tracking-tight">{tx.book?.title ?? 'Unknown Book'}</p>
+                    <span className="text-[10px] text-outline font-black uppercase tracking-widest bg-surface-container-highest px-2 py-0.5 rounded">
+                      {new Date(tx.borrowedDate || tx.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} 
+                    </span>
+                  </div>
+                  <p className="text-[13px] text-on-surface-variant font-medium mt-1">
+                    {tx.member?.name ?? 'Unknown'} • <span className="uppercase font-bold tracking-wider">{tx.status}</span>
+                  </p>
+                </div>
+              </div>
+            ))
           )}
         </div>
+      </section>
 
-      </div>
+      {/* Featured Collection Spotlight */}
+      <section className="col-span-12 lg:col-span-5 bg-surface-container-low dark:bg-slate-900/40 rounded-xl p-8 flex flex-col border border-transparent custom-shadow-hover transition-all duration-300">
+        <h3 className="text-2xl font-black font-headline text-on-surface dark:text-white mb-6">Volume Focus</h3>
+        {featuredBook ? (
+          <Link to="/books" className="bg-black/5 dark:bg-slate-950/40 rounded-xl p-6 border border-outline/10 dark:border-white/10 flex gap-6 shadow-inner group">
+            <div className="w-28 h-40 bg-slate-800 rounded shadow-2xl overflow-hidden flex-shrink-0 ring-1 ring-white/10 group-hover:scale-105 transition-transform flex items-center justify-center">
+               {featuredBook.coverImage ? (
+                 <img src={featuredBook.coverImage} alt={featuredBook.title} className="w-full h-full object-cover" />
+               ) : (
+                 <span className="material-symbols-outlined text-4xl text-white/50 group-hover:scale-110 transition-transform">menu_book</span>
+               )}
+            </div>
+            <div className="flex-1 flex flex-col justify-center">
+              <span className="text-[10px] uppercase tracking-[0.25em] text-tertiary dark:text-tertiary-fixed font-black mb-2">Recently Managed</span>
+              <h4 className="text-lg font-black text-on-surface dark:text-white font-headline leading-tight line-clamp-2">{featuredBook.title}</h4>
+              <p className="text-[12px] text-outline font-bold mt-2 line-clamp-1">{featuredBook.author || 'Catalogued Volume'}</p>
+              <div className="mt-6">
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-[11px] font-black text-outline uppercase">Stock Status</span>
+                  <span className="text-[11px] font-black text-primary">{Math.round((featuredBook.availableCopies / featuredBook.totalCopies) * 100)}%</span>
+                </div>
+                <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary shadow-sm transition-all duration-1000" 
+                    style={{ width: `${(featuredBook.availableCopies / featuredBook.totalCopies) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        ) : (
+          <div className="bg-black/5 dark:bg-slate-950/40 rounded-xl p-10 border border-outline/10 border-dashed text-center">
+            <p className="text-sm font-bold text-outline">No volume in spotlight.</p>
+          </div>
+        )}
+
+        <div className="mt-auto pt-8 border-t border-outline/10">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-[11px] text-outline font-black uppercase tracking-widest mb-1">Status</p>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                <p className="text-xl font-black text-on-surface dark:text-white">Active</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[11px] text-outline font-black uppercase tracking-widest mb-1">System Load</p>
+              <p className="text-xl font-black text-on-surface dark:text-white">Normal</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contextual FAB */}
+      <Link to="/books" className="fixed bottom-8 right-8 w-16 h-16 bg-primary hover:bg-primary-dim text-on-primary rounded-full shadow-[0_20px_50px_rgba(86,94,116,0.3)] flex items-center justify-center hover:scale-110 active:scale-90 transition-all z-50 group">
+        <span className="material-symbols-outlined text-3xl transition-transform group-hover:rotate-90" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
+      </Link>
+
     </div>
   );
 };

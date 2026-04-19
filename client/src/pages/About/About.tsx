@@ -77,8 +77,8 @@ const About: React.FC = () => {
                <Quote size={20} className="text-primary" /> Behind the Scenes
              </h3>
              <p className="leading-relaxed text-text-secondary-light dark:text-text-secondary-dark italic">
-               This platform’s architecture and design system layout was co‑authored seamlessly by <strong>Antigravity</strong>, 
-               an agentic AI model by Google DeepMind. This ensures responsive integration, real‑time styling conversions with Tailwind, 
+               This platform’s architecture and design system layout was co‑authored seamlessly by with the help of, 
+               an agentic AI model. This ensures responsive integration, real‑time styling conversions with Tailwind, 
                and robust external API interactions — making the LMS not only learner‑friendly but also technically advanced.
              </p>
           </GlassCard>

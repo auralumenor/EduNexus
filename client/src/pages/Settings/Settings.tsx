@@ -68,14 +68,14 @@ const Settings: React.FC = () => {
           </h2>
           <div className="flex flex-col gap-6">
             <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark border-l-4 border-indigo-500 pl-4 py-1 italic">
-              "This platform's architecture and design system layout was co-authored seamlessly by Antigravity—a highly capable agentic AI model by Google DeepMind—ensuring responsive integration, real-time styling conversions with Tailwind, and complex external API interactions."
+              "This platform's architecture and design system layout was co-authored seamlessly with the help of a highly capable agentic AI model by Google DeepMind—ensuring responsive integration, real-time styling conversions with Tailwind, and complex external API interactions."
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-sm pt-2">
               <div className="flex items-center gap-3 text-text-secondary-light dark:text-text-secondary-dark">
                 <Cpu size={16} className="text-primary shrink-0" />
                 <span className="font-medium text-text-primary-light dark:text-text-primary-dark min-w-[100px]">Architect</span>
-                <span className="font-semibold text-indigo-500">Antigravity (Google DeepMind)</span>
+                <span className="font-semibold text-indigo-500">AI Agent (Google DeepMind)</span>
               </div>
               <div className="flex items-center gap-3 text-text-secondary-light dark:text-text-secondary-dark">
                 <Code size={16} className="text-primary shrink-0" />

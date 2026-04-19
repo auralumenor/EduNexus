@@ -18,13 +18,36 @@ import Books from '../pages/Books/Books';
 import Users from '../pages/Users/Users';
 import Transactions from '../pages/Transactions/Transactions';
 import About from '../pages/About/About';
+import Documentation from '../pages/Documentation/Documentation';
 import NotFound from '../pages/NotFound/NotFound';
 
-// Protected Route Guard – shows nothing while auth state is loading
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-  if (isLoading) return <div className="app-loading">Loading…</div>;
+// Protected Route Guard – handles auth loading and role-based access
+const ProtectedRoute = ({ 
+  children, 
+  allowedRoles 
+}: { 
+  children: React.ReactNode; 
+  allowedRoles?: string[];
+}) => {
+  const { isAuthenticated, isLoading, user } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+          <p className="text-sm font-bold text-outline animate-pulse">Verifying Integrity...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isAuthenticated) return <Navigate to="/" replace />;
+
+  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return <>{children}</>;
 };
 
@@ -61,7 +84,7 @@ const AppRoutes = () => (
       <Route
         path="/members"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin']}>
             <DashboardLayout>
               <Users />
             </DashboardLayout>
@@ -102,9 +125,20 @@ const AppRoutes = () => (
       />
 
       <Route
-        path="/settings"
+        path="/documentation"
         element={
           <ProtectedRoute>
+            <DashboardLayout>
+              <Documentation />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
             <DashboardLayout>
               <Settings />
             </DashboardLayout>

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as bookController from './book.controller';
-import { protect } from '../../middleware/auth.middleware';
+import { protect, restrictTo } from '../../middleware/auth.middleware';
 
 const router = Router();
 
@@ -12,7 +12,7 @@ router.route('/')
 
 router.route('/:id')
   .get(bookController.getBook)
-  .put(bookController.updateBook)
-  .delete(bookController.deleteBook);
+  .put(restrictTo('admin'), bookController.updateBook)
+  .delete(restrictTo('admin'), bookController.deleteBook);
 
 export default router;
