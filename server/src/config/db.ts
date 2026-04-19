@@ -9,32 +9,37 @@ let memServer: any = null;
  * needing Docker or a local mongod installation.
  */
 const getConnectionUri = async (): Promise<string> => {
-  // Use real URI if explicitly provided and not the default placeholder
-  const hasRealUri =
-    process.env.MONGO_URI &&
-    !process.env.MONGO_URI.includes('localhost') &&
-    !process.env.MONGO_URI.includes('127.0.0.1');
+  // 1. Prioritize explicitly provided MONGO_URI
+  const rawUri = process.env.MONGO_URI || ENV.MONGO_URI;
+  
+  const isLocal = !rawUri || rawUri.includes('localhost') || rawUri.includes('127.0.0.1');
 
-  if (hasRealUri) return ENV.MONGO_URI;
+  // 2. Strict check for production (Vercel)
+  if (ENV.NODE_ENV === 'production' && isLocal) {
+    throw new Error(
+      'Production database URI missing. Please ensure MONGO_URI is set in Vercel Environment Variables and does not point to localhost.'
+    );
+  }
 
+  // 3. If we have a real remote URI, use it
+  if (!isLocal) return rawUri;
+
+  // 4. Development Fallback logic
   if (ENV.NODE_ENV === 'development') {
     try {
-      // Try real local MongoDB first (in case Docker/mongod is running)
-      await mongoose.connect(ENV.MONGO_URI, { serverSelectionTimeoutMS: 2000 });
+      // Try local MongoDB first
+      await mongoose.connect(rawUri, { serverSelectionTimeoutMS: 2000 });
       console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
       return ''; // already connected
     } catch {
-      // Local MongoDB not available — fall back to in-memory server
-      console.log('⚠️  Local MongoDB unavailable. Starting in-memory MongoDB for development...');
+      console.log('⚠️  Local MongoDB unavailable. Starting in-memory MongoDB...');
       const { MongoMemoryServer } = await import('mongodb-memory-server');
       memServer = await MongoMemoryServer.create();
-      const uri = memServer.getUri();
-      console.log(`🧠 In-memory MongoDB URI: ${uri}`);
-      return uri;
+      return memServer.getUri();
     }
   }
 
-  return ENV.MONGO_URI;
+  return rawUri;
 };
 
 export const connectDB = async (): Promise<void> => {

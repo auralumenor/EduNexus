@@ -16,11 +16,12 @@ export default async (req: any, res: any) => {
     // Pass the request to the Express application
     return app(req, res);
   } catch (error: any) {
-    console.error('Serverless Function Error:', error);
+    console.error('❌ Serverless Bridge Error:', error);
     res.status(500).json({ 
       status: 'error', 
-      message: 'Internal Server Error during bridge initialization',
-      details: error.message 
+      message: 'EduNexus API Bridge failed to initialize',
+      details: error.message || 'Unknown initialization error',
+      timestamp: new Date().toISOString()
     });
   }
 };
