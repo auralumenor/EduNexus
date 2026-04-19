@@ -8,6 +8,10 @@ import { connectDB } from '../server/src/config/db';
  */
 export default async (req: any, res: any) => {
   try {
+    // Pre-flight check
+    const hasMongo = !!(process.env.MONGO_URI);
+    console.log(`🔍 Pre-flight check: MONGO_URI is ${hasMongo ? 'DEFINED' : 'MISSING'}`);
+    
     // Ensure database connection is active (connectDB handles multiple calls safely)
     await connectDB();
     
