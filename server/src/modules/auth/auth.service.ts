@@ -55,8 +55,8 @@ export const forgotPassword = async (email: string) => {
   user.resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
   await user.save({ validateBeforeSave: false });
 
-  // Create reset url (this assumes frontend runs on localhost:3000 in dev)
-  const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+  // Create reset url (this assumes frontend runs on 127.0.0.1:3000 in dev)
+  const resetUrl = `http://127.0.0.1:3000/reset-password/${resetToken}`;
 
   const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
 
