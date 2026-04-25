@@ -1,5 +1,5 @@
-import app from '../server/src/app';
-import { connectDB } from '../server/src/config/db';
+import app from '../backend/src/app';
+import { connectDB } from '../backend/src/config/db';
 
 /**
  * Vercel Serverless Function entry point.

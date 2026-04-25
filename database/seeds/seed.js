@@ -1,13 +1,13 @@
 /**
  * seed.js — Populate the database with sample data for development.
  * Usage: node database/seeds/seed.js
- * (MongoDB and server must be configured in server/.env)
+ * (MongoDB and backend must be configured in backend/.env)
  */
 
 const mongoose = require('mongoose');
-require('dotenv').config({ path: '../server/.env' });
+require('dotenv').config({ path: '../backend/.env' });
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/lms_db';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://Lumenor:d5b6ad144152@cluster0.efsvv3x.mongodb.net/lms_db?appName=Cluster0';
 
 const BookSchema = new mongoose.Schema({ title: String, author: String, isbn: String, genre: String, description: String, totalCopies: Number, availableCopies: Number, publishedYear: Number, publisher: String }, { timestamps: true });
 const Book = mongoose.model('Book', BookSchema);

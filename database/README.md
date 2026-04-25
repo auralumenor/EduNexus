@@ -19,5 +19,5 @@ node seeds/seed.js
 ```
 
 ## Connection
-MongoDB runs at `mongodb://localhost:27017/lms_db` by default.  
-Configure via `server/.env` → `MONGO_URI`.
+MongoDB runs at `mongodb+srv://Lumenor:d5b6ad144152@cluster0.efsvv3x.mongodb.net/lms_db?appName=Cluster0` (Atlas Cluster).  
+Configure via `backend/.env` → `MONGO_URI`.

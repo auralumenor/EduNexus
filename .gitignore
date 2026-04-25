@@ -38,5 +38,5 @@ build/
 mongo_data/
 
 # Uploads directory
-server/uploads/*
-!server/uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep

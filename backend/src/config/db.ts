@@ -12,6 +12,7 @@ const getConnectionUri = async (): Promise<string> => {
   // 1. Prioritize explicitly provided MONGO_URI
   const rawUri = process.env.MONGO_URI || ENV.MONGO_URI;
   
+  const isAtlas = rawUri.includes('mongodb+srv://');
   const isLocal = !rawUri || rawUri.includes('localhost') || rawUri.includes('127.0.0.1');
 
   // 2. Strict check for production (Vercel)
@@ -21,18 +22,24 @@ const getConnectionUri = async (): Promise<string> => {
     );
   }
 
-  // 3. If we have a real remote URI, use it
-  if (!isLocal) return rawUri;
-
-  // 4. Development Fallback logic
+  // 3. Development logic: Try to connect to the provided URI, fall back to memory if it fails
   if (ENV.NODE_ENV === 'development') {
     try {
-      // Try local MongoDB first
-      await mongoose.connect(rawUri, { serverSelectionTimeoutMS: 2000 });
-      console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
+      console.log(`📡 Attempting to connect to MongoDB: ${isAtlas ? 'Atlas Cluster' : 'Local/Provided URI'}`);
+      // Use a shorter timeout for the initial check in development
+      await mongoose.connect(rawUri, { 
+        serverSelectionTimeoutMS: 3000,
+        connectTimeoutMS: 5000 
+      });
       return ''; // already connected
-    } catch {
-      console.log('⚠️  Local MongoDB unavailable. Starting in-memory MongoDB...');
+    } catch (error: any) {
+      console.log(`⚠️  MongoDB connection failed (${error.message}).`);
+      
+      if (isAtlas) {
+        console.log('💡 Tip: Ensure your IP is whitelisted in Atlas and your credentials are correct.');
+      }
+
+      console.log('🚀 Falling back to in-memory MongoDB for local development...');
       const { MongoMemoryServer } = await import('mongodb-memory-server');
       memServer = await MongoMemoryServer.create();
       return memServer.getUri();

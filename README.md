@@ -55,15 +55,15 @@ Before running this project, you must install:
    ```
 
 3. **Environment Setup:**
-   Duplicate the `.env.example` configurations in both `server/` and `client/` directories.
+   Duplicate the `.env.example` configurations in both `backend/` and `frontend/` directories.
    ```bash
    # Root level
    cp .env.example .env
    # Subdirectories
-   cp server/.env.example server/.env
-   cp client/.env.example client/.env
+   cp backend/.env.example backend/.env
+   cp frontend/.env.example frontend/.env
    ```
-   *(Be sure to adjust `server/.env` with your MongoDB URI and JWT_SECRET)*
+   *(Be sure to adjust `backend/.env` with your MongoDB URI and JWT_SECRET)*
 
 4. **Launch Application:**
    From the root folder, launch the unified development environment:
@@ -75,13 +75,13 @@ Before running this project, you must install:
 ## Directory Structure
 
 ```text
-├── client/                 # React frontend powered by Vite
+├── frontend/               # React frontend powered by Vite
 │   ├── src/
 │   │   ├── components/     # Scalable UI logic (Buttons, Inputs, Cards)
 │   │   ├── context/        # Core hooks (AuthContext, ThemeContext)
 │   │   ├── pages/          # Primary SPA application routes
 │   │   ├── services/       # Functional bindings intercepting backend APIs
-├── server/                 # Express REST endpoint
+├── backend/                # Express REST endpoint
 │   ├── src/
 │   │   ├── config/         # In-memory MongoDB fallbacks & standard boot routing
 │   │   ├── modules/        # Modular service controllers (Auth, Books, Users, Transactions)
