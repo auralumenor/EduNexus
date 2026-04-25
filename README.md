@@ -70,7 +70,7 @@ Before running this project, you must install:
    ```bash
    npm run dev
    ```
-   The client will open automatically at `http://localhost:3000` while the backend runs on `http://localhost:5000`.
+   The client will open automatically at `http://127.0.0.1:3000` while the backend runs on `http://127.0.0.1:5000`.
 
 ## Directory Structure
 

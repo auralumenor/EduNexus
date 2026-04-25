@@ -7,7 +7,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config({ path: '../server/.env' });
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/lms_db';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/lms_db';
 
 const BookSchema = new mongoose.Schema({ title: String, author: String, isbn: String, genre: String, description: String, totalCopies: Number, availableCopies: Number, publishedYear: Number, publisher: String }, { timestamps: true });
 const Book = mongoose.model('Book', BookSchema);
