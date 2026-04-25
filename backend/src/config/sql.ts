@@ -7,11 +7,23 @@ import path from 'path';
  * This provides ACID compliance for Transactions and Users
  * while MongoDB handles the flexible Book catalog.
  */
-export const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: ENV.SQLITE_PATH || './database.sqlite',
-  logging: false,
-});
+export const sequelize = process.env.DATABASE_URL
+  ? new Sequelize(process.env.DATABASE_URL, {
+      dialect: 'postgres',
+      protocol: 'postgres',
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      },
+      logging: false,
+    })
+  : new Sequelize({
+      dialect: 'sqlite',
+      storage: ENV.SQLITE_PATH || './database.sqlite',
+      logging: false,
+    });
 
 export const connectSQL = async () => {
   try {

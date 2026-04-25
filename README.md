@@ -35,6 +35,12 @@ EduNexus is a modern, responsive, and secure open-source Library Management Syst
 | **Admin** | Full Control | Can manage members, delete volumes, edit metadata, and access system settings. |
 | **Librarian** | Operational | Can browse the catalog, manage transactions, and discover new books. Restricted from deletion. |
 
+### Demo Accounts
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Admin** | `admin@edunexus.local` | `admin123` |
+| **Librarian** | `demo@edunexus.com` | `demo123` |
+
 ## Prerequisites
 
 Before running this project, you must install:

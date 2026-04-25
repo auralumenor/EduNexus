@@ -1,38 +1,45 @@
-import { MemberModel } from './user.model';
+import { MemberSQL as MemberModel } from './member.sql';
 import { CreateMemberDto, UpdateMemberDto } from './user.types';
+import { Op } from 'sequelize';
 
 export const getAllMembers = async (search?: string) => {
-  const query = search
+  const where = search
     ? {
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-          { membershipId: { $regex: search, $options: 'i' } },
+        [Op.or]: [
+          { name: { [Op.like]: `%${search}%` } },
+          { email: { [Op.like]: `%${search}%` } },
+          { membershipId: { [Op.like]: `%${search}%` } },
         ],
       }
     : {};
-  return MemberModel.find(query).sort({ createdAt: -1 });
+    
+  return MemberModel.findAll({ 
+    where,
+    order: [['createdAt', 'DESC']]
+  });
 };
 
 export const getMemberById = async (id: string) => {
-  const member = await MemberModel.findById(id);
+  const member = await MemberModel.findByPk(id);
   if (!member) throw Object.assign(new Error('Member not found'), { statusCode: 404 });
   return member;
 };
 
 export const createMember = async (dto: CreateMemberDto) => {
-  const existing = await MemberModel.findOne({ email: dto.email });
+  const existing = await MemberModel.findOne({ where: { email: dto.email } });
   if (existing) throw Object.assign(new Error('A member with this email already exists'), { statusCode: 409 });
-  return MemberModel.create(dto);
+  return MemberModel.create(dto as any);
 };
 
 export const updateMember = async (id: string, dto: UpdateMemberDto) => {
-  const member = await MemberModel.findByIdAndUpdate(id, dto, { new: true, runValidators: true });
+  const member = await MemberModel.findByPk(id);
   if (!member) throw Object.assign(new Error('Member not found'), { statusCode: 404 });
+  
+  await member.update(dto as any);
   return member;
 };
 
 export const deleteMember = async (id: string) => {
-  const member = await MemberModel.findByIdAndDelete(id);
-  if (!member) throw Object.assign(new Error('Member not found'), { statusCode: 404 });
+  const member = await MemberModel.findByPk(id);
+  if (member) await member.destroy();
 };

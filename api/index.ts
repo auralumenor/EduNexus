@@ -1,5 +1,6 @@
 import app from '../backend/src/app';
 import { connectDB } from '../backend/src/config/db';
+import { connectSQL } from '../backend/src/config/sql';
 
 /**
  * Vercel Serverless Function entry point.
@@ -10,10 +11,12 @@ export default async (req: any, res: any) => {
   try {
     // Pre-flight check
     const hasMongo = !!(process.env.MONGO_URI);
-    console.log(`🔍 Pre-flight check: MONGO_URI is ${hasMongo ? 'DEFINED' : 'MISSING'}`);
+    const hasSQL = !!(process.env.DATABASE_URL || process.env.SQLITE_DB_PATH);
+    console.log(`🔍 Pre-flight check: MONGO_URI is ${hasMongo ? 'DEFINED' : 'MISSING'}, SQL is ${hasSQL ? 'DEFINED' : 'MISSING'}`);
     
-    // Ensure database connection is active (connectDB handles multiple calls safely)
+    // Ensure database connections are active
     await connectDB();
+    await connectSQL();
     
     console.log(`🚀 Bridge triggered: ${req.method} ${req.url}`);
     

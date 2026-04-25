@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { UserModel } from './auth.model';
+import { UserSQL as UserModel } from './user.sql';
 import { LoginDto, RegisterDto, AuthResponse } from './auth.types';
 import { ENV } from '../../config/env';
 import { sendEmail } from '../../utils/email';
@@ -9,40 +9,40 @@ const signToken = (id: string, role: string): string =>
   jwt.sign({ id, role }, ENV.JWT_SECRET, { expiresIn: ENV.JWT_EXPIRES_IN } as jwt.SignOptions);
 
 export const register = async (dto: RegisterDto): Promise<AuthResponse> => {
-  const existing = await UserModel.findOne({ email: dto.email });
+  const existing = await UserModel.findOne({ where: { email: dto.email } });
   if (existing) throw Object.assign(new Error('Email already in use'), { statusCode: 409 });
 
-  const user = await UserModel.create(dto);
-  const token = signToken(String(user._id), user.role);
+  const user = await UserModel.create(dto as any);
+  const token = signToken(String(user.id), user.role);
 
   return {
     token,
-    user: { id: String(user._id), name: user.name, email: user.email, role: user.role },
+    user: { id: String(user.id), name: user.name, email: user.email, role: user.role },
   };
 };
 
 export const login = async (dto: LoginDto): Promise<AuthResponse> => {
-  const user = await UserModel.findOne({ email: dto.email }).select('+password');
+  const user = await UserModel.findOne({ where: { email: dto.email } });
   if (!user || !(await user.comparePassword(dto.password))) {
     throw Object.assign(new Error('Invalid email or password'), { statusCode: 401 });
   }
 
-  const token = signToken(String(user._id), user.role);
+  const token = signToken(String(user.id), user.role);
 
   return {
     token,
-    user: { id: String(user._id), name: user.name, email: user.email, role: user.role },
+    user: { id: String(user.id), name: user.name, email: user.email, role: user.role },
   };
 };
 
 export const getMe = async (id: string) => {
-  const user = await UserModel.findById(id).select('-password');
+  const user = await UserModel.findByPk(id);
   if (!user) throw Object.assign(new Error('User not found'), { statusCode: 404 });
   return user;
 };
 
 export const forgotPassword = async (email: string) => {
-  const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ where: { email } });
   if (!user) {
     throw Object.assign(new Error('There is no user with that email address.'), { statusCode: 404 });
   }
@@ -53,7 +53,7 @@ export const forgotPassword = async (email: string) => {
   // Hash it and store in db
   user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
   user.resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-  await user.save({ validateBeforeSave: false });
+  await user.save();
 
   // Create reset url (this assumes frontend runs on CLIENT_URL in dev)
   const resetUrl = `${ENV.CLIENT_URL}/reset-password/${resetToken}`;
@@ -69,7 +69,7 @@ export const forgotPassword = async (email: string) => {
   } catch (err) {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
-    await user.save({ validateBeforeSave: false });
+    await user.save();
     throw Object.assign(new Error('There was an error sending the email. Try again later!'), { statusCode: 500 });
   }
 };
@@ -78,9 +78,13 @@ export const resetPassword = async (token: string, newPassword: string) => {
   // Hash URL token to compare with DB
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
+  // Sequelize doesn't have the same $gt syntax in plain objects, needs Op
+  const { Op } = require('sequelize');
   const user = await UserModel.findOne({
-    resetPasswordToken: hashedToken,
-    resetPasswordExpire: { $gt: Date.now() }
+    where: {
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { [Op.gt]: new Date() }
+    }
   });
 
   if (!user) {
@@ -95,11 +99,11 @@ export const resetPassword = async (token: string, newPassword: string) => {
 };
 
 export const updateMe = async (id: string, data: { name?: string, email?: string }) => {
-  const user = await UserModel.findById(id);
+  const user = await UserModel.findByPk(id);
   if (!user) throw Object.assign(new Error('User not found'), { statusCode: 404 });
 
   if (data.email && data.email !== user.email) {
-    const existing = await UserModel.findOne({ email: data.email });
+    const existing = await UserModel.findOne({ where: { email: data.email } });
     if (existing) throw Object.assign(new Error('Email already in use'), { statusCode: 409 });
   }
 
@@ -107,11 +111,11 @@ export const updateMe = async (id: string, data: { name?: string, email?: string
   if (data.email) user.email = data.email;
   
   await user.save();
-  return { id: String(user._id), name: user.name, email: user.email, role: user.role };
+  return { id: String(user.id), name: user.name, email: user.email, role: user.role };
 };
 
 export const updatePassword = async (id: string, currentPass: string, newPass: string) => {
-  const user = await UserModel.findById(id).select('+password');
+  const user = await UserModel.findByPk(id);
   if (!user) throw Object.assign(new Error('User not found'), { statusCode: 404 });
 
   if (!(await user.comparePassword(currentPass))) {
@@ -123,5 +127,6 @@ export const updatePassword = async (id: string, currentPass: string, newPass: s
 };
 
 export const deleteMe = async (id: string) => {
-  await UserModel.findByIdAndDelete(id);
+  const user = await UserModel.findByPk(id);
+  if (user) await user.destroy();
 };

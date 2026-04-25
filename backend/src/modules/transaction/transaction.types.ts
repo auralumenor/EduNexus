@@ -14,9 +14,9 @@ export interface ITransaction extends Document {
   updatedAt: Date;
 }
 
-export interface BorrowBookDto {
-  bookId: string;
-  memberId: string;
+export interface CreateTransactionDto {
+  bookId: string;    // MongoDB ID
+  memberId: string;  // SQL ID
 }
 
 export interface ReturnBookDto {
