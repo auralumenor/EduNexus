@@ -8,7 +8,10 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc"
   },
-  "dependencies": {},
+  "dependencies": {
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7"
+  },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",

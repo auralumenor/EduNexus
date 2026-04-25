@@ -31,6 +31,7 @@ const getConnectionUri = async (): Promise<string> => {
         serverSelectionTimeoutMS: 3000,
         connectTimeoutMS: 5000 
       });
+      console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
       return ''; // already connected
     } catch (error: any) {
       console.log(`⚠️  MongoDB connection failed (${error.message}).`);

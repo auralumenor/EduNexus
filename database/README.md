@@ -1,23 +1,20 @@
 # Database
 
-This project uses **MongoDB** (via Mongoose ODM) — a NoSQL document database. The `schema.sql` file and `migrations/` directory are placeholders retained for structural reference; they are not used.
+EduNexus uses a **Hybrid Database Architecture** to ensure both flexibility and data integrity:
 
-## Collections
+1.  **MongoDB (NoSQL)**: Used for the **Book Catalog**. MongoDB allows for flexible metadata and varied book details (e.g., varied genres, subject tags) that don't always follow a strict schema.
+2.  **SQLite (SQL)**: Used for **Users and Transactions**. SQLite (via Sequelize) provides ACID compliance, ensuring that borrowing/returning operations are secure and transactional.
 
-| Collection | Description |
-|---|---|
-| `users` | Admin/librarian accounts (bcrypt-hashed passwords) |
-| `books` | Book catalog with copy tracking |
-| `members` | Library member records |
-| `transactions` | Borrow/return records with due dates and fines |
+## Connection
+
+- **MongoDB**: `mongodb://127.0.0.1:27017/lms_db` (Local)
+- **SQL (SQLite)**: `./database.sqlite` (Local file)
+
+Configure these via `backend/.env`.
 
 ## Seeding
 
-To seed the database with sample data, run (once server and MongoDB are running):
+To seed the database with sample data:
 ```bash
 node seeds/seed.js
 ```
-
-## Connection
-MongoDB runs at `mongodb+srv://Lumenor:d5b6ad144152@cluster0.efsvv3x.mongodb.net/lms_db?appName=Cluster0` (Atlas Cluster).  
-Configure via `backend/.env` → `MONGO_URI`.
