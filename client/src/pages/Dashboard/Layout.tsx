@@ -57,7 +57,7 @@ export const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
         <div className="flex items-center justify-between px-6 pb-8">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-primary rounded-lg rotate-45 shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.4)]" />
-            <h2 className="text-lg font-semibold tracking-tight">Digital Curator</h2>
+            <h2 className="text-lg font-semibold tracking-tight">Edunexus</h2>
           </div>
           <button className="md:hidden text-text-secondary-light dark:text-text-secondary-dark" onClick={closeSidebar}>
             <X size={24} />

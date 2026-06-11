@@ -7,24 +7,26 @@ let memServer: any = null;
  * In development with no real MongoDB available, we spin up an in-memory
  * MongoDB instance automatically so the server always starts without
  * needing Docker or a local mongod installation.
+ *
+ * In production, MONGO_URI must be set to a real connection string (e.g. MongoDB Atlas).
+ * The in-memory fallback is never used outside of development.
  */
 const getConnectionUri = async (): Promise<string> => {
-  // Use real URI if explicitly provided and not the default placeholder
-  const hasRealUri =
-    process.env.MONGO_URI &&
-    !process.env.MONGO_URI.includes('localhost') &&
-    !process.env.MONGO_URI.includes('127.0.0.1');
+  // Production — always use the provided URI, no fallback
+  if (ENV.NODE_ENV === 'production') {
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI environment variable is required in production');
+    }
+    return ENV.MONGO_URI;
+  }
 
-  if (hasRealUri) return ENV.MONGO_URI;
-
+  // Development — try the configured URI first, fall back to in-memory
   if (ENV.NODE_ENV === 'development') {
     try {
-      // Try real local MongoDB first (in case Docker/mongod is running)
       await mongoose.connect(ENV.MONGO_URI, { serverSelectionTimeoutMS: 2000 });
       console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
       return ''; // already connected
     } catch {
-      // Local MongoDB not available — fall back to in-memory server
       console.log('⚠️  Local MongoDB unavailable. Starting in-memory MongoDB for development...');
       const { MongoMemoryServer } = await import('mongodb-memory-server');
       memServer = await MongoMemoryServer.create();

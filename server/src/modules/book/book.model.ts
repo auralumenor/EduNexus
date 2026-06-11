@@ -28,4 +28,7 @@ BookSchema.pre('save', function (next) {
 // Full-text search indexes
 BookSchema.index({ title: 'text', author: 'text', isbn: 'text', genre: 'text' });
 
+// Sparse unique index on isbn — allows multiple books with no ISBN, but no duplicate ISBNs
+BookSchema.index({ isbn: 1 }, { unique: true, sparse: true });
+
 export const BookModel = mongoose.model<IBook>('Book', BookSchema);

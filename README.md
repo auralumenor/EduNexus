@@ -1,4 +1,4 @@
-<h1 align="center">Digital Curator (LMS)</h1>
+<h1 align="center">Edunexus (LMS)</h1>
 
 <p align="center">
   <strong>An Enterprise-Grade Library Management System built with React, Node.js, and Tailwind CSS.</strong>
@@ -14,7 +14,7 @@
 
 ## Overview
 
-Digital Curator is a modern, responsive, and secure open-source Library Management System designed for administrative workflows. It streamlines database operations by allowing instant catalogue modifications, user transaction histories, and dynamically hooks directly into [OpenLibrary.org](https://openlibrary.org/) to autofill physical inventory data natively via ISBN fetching.
+Edunexus is a modern, responsive, and secure open-source Library Management System designed for administrative workflows. It streamlines database operations by allowing instant catalogue modifications, user transaction histories, and dynamically hooks directly into [OpenLibrary.org](https://openlibrary.org/) to autofill physical inventory data natively via ISBN fetching.
 
 ## Features
 

@@ -72,7 +72,7 @@ const Register: React.FC = () => {
             Join the Platform
           </h1>
           <p className="text-lg text-center text-text-secondary-light dark:text-text-secondary-dark mb-10">
-            Create your Digital Curator account and start managing your library today.
+            Create your Edunexus account and start managing your library today.
           </p>
 
           <div className="flex flex-col gap-4 text-sm text-text-secondary-light dark:text-text-secondary-dark font-medium">

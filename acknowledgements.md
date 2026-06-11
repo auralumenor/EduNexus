@@ -6,10 +6,10 @@ The Library Management System incorporates assets, features, and design decision
 Book cataloging, ISBN lookup features, and cover image fetching are powered by [OpenLibrary](https://openlibrary.org/). We extend our deep gratitude to the Internet Archive and the open-source community that maintains this incredibly robust bibliographical metadata project. Credits for book data and covers belong to the respective contributors of the OpenLibrary project.
 
 ## AI Assistance
-The architectural refactoring, "Digital Curator" aesthetic, and complex full-stack feature implementations were developed with the assistance of **Antigravity**, an AI coding assistant designed by Google DeepMind.
+The architectural refactoring, "Edunexus" aesthetic, and complex full-stack feature implementations were developed with the assistance of **Antigravity**, an AI coding assistant designed by Google DeepMind.
 
 ## Technologies Used
-- **Tailwind CSS**: Utility-first CSS framework enabling our "Digital Curator" design language.
+- **Tailwind CSS**: Utility-first CSS framework enabling our "Edunexus" design language.
 - **Node.js & Express**: High-performance backend routing infrastructure.
 - **React & Vite**: Core architecture behind our Single Page Application workflow.
 - **MongoDB**: Flexible NoSQL database for inventory and user management.

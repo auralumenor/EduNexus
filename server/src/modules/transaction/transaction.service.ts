@@ -49,7 +49,10 @@ export const returnBook = async (dto: ReturnBookDto) => {
   if (tx.status === 'returned') throw Object.assign(new Error('Book already returned'), { statusCode: 400 });
 
   const now = new Date();
-  const overdueDays = Math.max(0, Math.ceil((now.getTime() - tx.dueDate.getTime()) / (1000 * 60 * 60 * 24)));
+  const isOverdue = now > tx.dueDate;
+  const overdueDays = isOverdue
+    ? Math.ceil((now.getTime() - tx.dueDate.getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
   const fine = overdueDays * SERVER_CONFIG.DEFAULT_FINE_PER_DAY;
 
   tx.returnedDate = now;
@@ -64,4 +67,16 @@ export const returnBook = async (dto: ReturnBookDto) => {
   }
 
   return tx.populate(['book', 'member']);
+};
+
+/**
+ * Marks all borrowed transactions whose dueDate has passed as 'overdue'.
+ * Call this on a schedule (e.g. daily cron) or at server startup.
+ */
+export const syncOverdueTransactions = async () => {
+  const result = await TransactionModel.updateMany(
+    { status: 'borrowed', dueDate: { $lt: new Date() } },
+    { $set: { status: 'overdue' } }
+  );
+  return result.modifiedCount;
 };

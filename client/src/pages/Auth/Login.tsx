@@ -44,7 +44,7 @@ const Login: React.FC = () => {
             <BookOpen size={32} className="text-white" />
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-indigo-600 dark:from-white dark:to-indigo-300">
-            Digital Curator
+            Edunexus
           </h1>
           <p className="text-lg text-text-secondary-light dark:text-text-secondary-dark">
             Enterprise Library Management Platform

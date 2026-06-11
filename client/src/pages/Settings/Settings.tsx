@@ -64,7 +64,7 @@ const Settings: React.FC = () => {
         <GlassCard>
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-text-primary-light dark:text-text-primary-dark border-b border-border-light dark:border-border-dark pb-4">
             <ShieldCheck size={20} className="text-green-500" />
-            About Digital Curator
+            About Edunexus
           </h2>
           <div className="flex flex-col gap-6">
             <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark border-l-4 border-indigo-500 pl-4 py-1 italic">
