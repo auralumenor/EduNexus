@@ -2,19 +2,13 @@ services:
   - type: web
     name: edunexus-api
     runtime: node
-    rootDir: server
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: cd server && npm install && npm run build
+    startCommand: cd server && npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 5000
-      # Set these in the Render dashboard — do NOT commit real values here
-      - key: MONGO_URI
-        sync: false
-      - key: JWT_SECRET
-        sync: false
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: FRONTEND_URL
@@ -25,7 +19,11 @@ services:
         value: EduNexus
       - key: FROM_EMAIL
         value: noreply@yourdomain.com
-      # SMTP — set in Render dashboard if using email
+      # Set these in the Render dashboard — do NOT commit real values here
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT
