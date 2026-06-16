@@ -28,6 +28,7 @@ const getConnectionUri = async (): Promise<string> => {
       return ''; // already connected
     } catch {
       console.log('⚠️  Local MongoDB unavailable. Starting in-memory MongoDB for development...');
+      // @ts-ignore — mongodb-memory-server is a dev-only dependency, not available in production
       const { MongoMemoryServer } = await import('mongodb-memory-server');
       memServer = await MongoMemoryServer.create();
       const uri = memServer.getUri();
