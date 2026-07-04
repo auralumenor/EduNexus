@@ -16,6 +16,10 @@
 
 Edunexus is a modern, responsive, and secure open-source Library Management System designed for administrative workflows. It streamlines database operations by allowing instant catalogue modifications, user transaction histories, and dynamically hooks directly into [OpenLibrary.org](https://openlibrary.org/) to autofill physical inventory data natively via ISBN fetching.
 
+## 🚧 Work in Progress
+
+This project is not yet complete and is actively being developed. Expect frequent updates and possible breaking changes.
+
 ## Features
 
 - **Dynamic Book Discovery**: Search by **Title, Author, or ISBN**. Our system dynamically hooks into [OpenLibrary.org](https://openlibrary.org/) to fetch high-quality covers, publishers, and metadata to auto-fill your inventory.
